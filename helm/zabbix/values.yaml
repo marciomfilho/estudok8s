@@ -1,0 +1,28 @@
+server:
+  image:
+    tag: "5.4.0"
+  persistence:
+    enabled: true
+    size: 10Gi
+  resources:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+frontend:
+  service:
+    type: ClusterIP
+
+database:
+  type: postgresql
+  postgresql:
+    postgresqlDatabase: zabbix
+    postgresqlUsername: zabbix
+    postgresqlPassword: zabbixpassword
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
