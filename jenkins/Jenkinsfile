@@ -6,14 +6,15 @@ pipeline {
     GCP_CLUSTER = 'cluster-zabbix-grafana'
     NAMESPACE = 'monitoring'
     GCLOUD_BIN = '/Users/marcio/Downloads/google-cloud-sdk/bin/gcloud'
+    PROJECT_PATH = '/Users/marcio/Documents/aula/estudok8s'
   }
   stages {
     stage('Autenticar e Provisionar Infraestrutura') {
       steps {
         withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-          sh 'ls -l $GOOGLE_APPLICATION_CREDENTIALS'  // Validar arquivo
-          sh '$GCLOUD_BIN auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-          dir('terraform') {
+          sh "ls -l $GOOGLE_APPLICATION_CREDENTIALS"
+          sh "$GCLOUD_BIN auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS"
+          dir("$PROJECT_PATH/terraform") {
             sh 'terraform init'
             sh 'terraform apply -auto-approve'
           }
@@ -23,19 +24,19 @@ pipeline {
     stage('Configurar kubectl') {
       steps {
         withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-          sh '$GCLOUD_BIN auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-          sh '$GCLOUD_BIN container clusters get-credentials $GCP_CLUSTER --zone $GCP_ZONE --project $GCP_PROJECT'
+          sh "$GCLOUD_BIN auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS"
+          sh "$GCLOUD_BIN container clusters get-credentials $GCP_CLUSTER --zone $GCP_ZONE --project $GCP_PROJECT"
         }
       }
     }
     stage('Criar Namespace') {
       steps {
-        sh 'kubectl apply -f k8s-manifests/namespaces.yaml'
+        sh "kubectl apply -f $PROJECT_PATH/k8s-manifests/namespaces.yaml"
       }
     }
     stage('Deploy Zabbix via Helm') {
       steps {
-        dir('helm/zabbix') {
+        dir("$PROJECT_PATH/helm/zabbix") {
           sh 'helm repo add zabbix-community https://zabbix-community.github.io/helm-zabbix'
           sh 'helm repo update'
           sh 'helm upgrade --install zabbix zabbix-community/zabbix -f values.yaml --namespace $NAMESPACE --create-namespace --dependency-update'
@@ -44,7 +45,7 @@ pipeline {
     }
     stage('Deploy Grafana via Helm') {
       steps {
-        dir('helm/grafana') {
+        dir("$PROJECT_PATH/helm/grafana") {
           sh 'helm repo add grafana https://grafana.github.io/helm-charts'
           sh 'helm repo update'
           sh 'helm upgrade --install grafana grafana/grafana -f values.yaml --namespace $NAMESPACE'
@@ -53,7 +54,7 @@ pipeline {
     }
     stage('Aplicar Ingress') {
       steps {
-        sh 'kubectl apply -f k8s-manifests/ingress.yaml'
+        sh "kubectl apply -f $PROJECT_PATH/k8s-manifests/ingress.yaml"
       }
     }
   }
