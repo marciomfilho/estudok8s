@@ -5,13 +5,14 @@ pipeline {
     GCP_ZONE = 'us-central1-a'
     GCP_CLUSTER = 'cluster-zabbix-grafana'
     NAMESPACE = 'monitoring'
+    GCLOUD_BIN = '/Users/marcio/Downloads/google-cloud-sdk/bin/gcloud'
   }
   stages {
     stage('Autenticar e Provisionar Infraestrutura') {
       steps {
         withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-          sh 'ls -l $GOOGLE_APPLICATION_CREDENTIALS'  // Para validar arquivo (opcional)
-          sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
+          sh 'ls -l $GOOGLE_APPLICATION_CREDENTIALS'  // Validar arquivo
+          sh '$GCLOUD_BIN auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
           dir('terraform') {
             sh 'terraform init'
             sh 'terraform apply -auto-approve'
@@ -22,8 +23,8 @@ pipeline {
     stage('Configurar kubectl') {
       steps {
         withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-          sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
-          sh 'gcloud container clusters get-credentials $GCP_CLUSTER --zone $GCP_ZONE --project $GCP_PROJECT'
+          sh '$GCLOUD_BIN auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
+          sh '$GCLOUD_BIN container clusters get-credentials $GCP_CLUSTER --zone $GCP_ZONE --project $GCP_PROJECT'
         }
       }
     }
