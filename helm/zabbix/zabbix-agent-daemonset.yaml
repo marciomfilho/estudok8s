@@ -17,16 +17,18 @@ spec:
         image: zabbix/zabbix-agent2:latest
         ports:
         - containerPort: 10050
-          name: agent-port
+          name: zabbix-agent
         volumeMounts:
         - name: config-volume
           mountPath: /etc/zabbix/zabbix_agent2.conf
           subPath: zabbix_agent2.conf
-        securityContext:
-          runAsUser: 1000
-          runAsGroup: 1000
+        - name: log-volume
+          mountPath: /var/log/zabbix
       volumes:
       - name: config-volume
         configMap:
           name: zabbix-agent-config
-
+      - name: log-volume
+        emptyDir: {}
+      securityContext:
+        runAsUser: 0
