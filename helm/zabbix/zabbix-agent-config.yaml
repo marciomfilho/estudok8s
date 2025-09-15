@@ -7,7 +7,7 @@ data:
   zabbix_agent2.conf: |
     PidFile=/var/run/zabbix/zabbix_agent2.pid
     LogFile=/var/log/zabbix/zabbix_agent2.log
-    Server=34.118.231.140
-    ServerActive=34.118.231.140
+    Server=10.16.1.4
+    ServerActive=10.16.1.4
     HostnameItem=system.hostname
     Include=/etc/zabbix/zabbix_agent2.d/*.conf
