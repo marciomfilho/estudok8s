@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: zabbix-agent
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: zabbix-agent
+  template:
+    metadata:
+      labels:
+        app: zabbix-agent
+    spec:
+      containers:
+      - name: zabbix-agent
+        image: zabbix/zabbix-agent2:latest
+        ports:
+        - containerPort: 10050
+          name: zabbix-agent-port
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/zabbix/zabbix_agent2.conf
+          subPath: zabbix_agent2.conf
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+      volumes:
+      - name: config-volume
+        configMap:
+          name: zabbix-agent-config
+
