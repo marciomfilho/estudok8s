@@ -24,11 +24,15 @@ spec:
           subPath: zabbix_agent2.conf
         - name: log-volume
           mountPath: /var/log/zabbix
+        - name: run-volume
+          mountPath: /var/run/zabbix
       volumes:
       - name: config-volume
         configMap:
           name: zabbix-agent-config
       - name: log-volume
+        emptyDir: {}
+      - name: run-volume
         emptyDir: {}
       securityContext:
         runAsUser: 0
