@@ -17,7 +17,7 @@ spec:
         image: zabbix/zabbix-agent2:latest
         ports:
         - containerPort: 10050
-          name: zabbix-agent-port
+          name: agent-port
         volumeMounts:
         - name: config-volume
           mountPath: /etc/zabbix/zabbix_agent2.conf
