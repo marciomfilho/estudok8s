@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zabbix-agent-config
+  namespace: monitoring
+data:
+  zabbix_agent2.conf: |
+    PidFile=/var/run/zabbix/zabbix_agent2.pid
+    LogFile=/var/log/zabbix/zabbix_agent2.log
+    Server=34.118.231.140
+    ServerActive=34.118.231.140
+    HostnameItem=system.hostname
+    Include=/etc/zabbix/zabbix_agent2.d/*.conf
