@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "careful-airfoil-470112-u0",
+  "private_key_id": "5527bbcab49de1c568b7163e339fc8c9afa9842a",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQChxxAmaybTN7cN\ne2dQXrTcRl72HDVE0XwKGYuCwV1fe6m/ygGUhf0VjYVUFORMaS1vqYxvVI+xjU18\nUe5yo6vLlF7niaagKl7ck20zYoIHBU94V72gRcJusmx2aid9AldYzoZwbSSvkmv7\n6lR3Fu+HywoILMtdMglqmur7efo17EDbDShwjgZhkfWiyphNRU1es/wiXyTcAqMx\njOchnykZIkrrOguQ/dkaa3QDGgb5Yc1FahJMhHfsFXT3Q78GE69IMVnh2Urfck/B\nz1IsYY68MOLdHHLIPnX+UACAGgavf/ra0YXey8YUL0jVdhNtbSOBtFY3rqckRTuZ\n8WevcDF7AgMBAAECggEAR9uZytbRegRHZM+phkNq5mTDjWHeL2E1TW8nTr8A8IaH\nUc8ygHw7fDVOQZi+B0q4id6vqEvRP7ZZ8pyZ44XbqyOOPB4iSwZG+IbrfGWHCANN\n11BxxBz4Th8mmjpwq9A8aA/kG0//eZT6Lf1Z40PmxVRkclkjQ5QUJqwFMApwHz7J\nt5WwawtiPLIX/lkWIjZcLYF6JxiNPDSSaXwZ46BQvoHOjUVY++QHAQeM4we6W1Hc\nvipdwPX/g8418WgPHSGNni9aWcw0v255tLiBW40u4sDY9hdUSBDaB1DcKP+NkQMv\nokxV7uW8F336AO9XZQhBF2F4T/tmD9gIAJFsqptGUQKBgQDgEOP9Es6PJKYFJkTT\nDgQb+F4qfkOvbz1Qw9RxacnjXQi2WN+27/nDNPcy3XBpG2SbmVS3OOMTqC/kfpM0\nTS/5dXL9mrbveyvKYwFcPjn1RjCVFnerq9J4YBiJEMMZAD2d1mIR76hnbumLoydJ\n1gRhP6tyPqZvf7o3wfs+N7hoBQKBgQC41ZA4W40Uxu9zdrn4A3eXM/KEebZ/fxUC\nhhN30EL8ZriAFtj7mldOZhLZr8wB6y2vUurzYYyrE/z6Du4h0G9AH6G9RKG6Ud4A\nF5HFs8YaUIXEfWKbUjKHQ4pUk2p/23hRrWPuLj+bqrBmXzMDLDpuAy+s/v9Dso9p\n2fRAZxjrfwKBgC6ZlLEHfkoq9xRPFzVFzvj6OKthwzXzTq9DayWDOOe+a5dw+GYV\nlr5Qf7DmeQCDH/N0ejf47tEhw4QkBv1zqCybjqTLzowT89GNsbS7hFZMmMIJAC6F\n96ntYmzvPYQvlqEC+zZ7v2xzlsLh1cP3bMXE9iU2fmrmB5adE2GnOQT5AoGAJDOP\n/7nOtBcSpybF3dGwBqliAphkKiyVzNy9y2W6+PyVfmD7NqxQFUbgwkowRt/tHr26\nzth4WLmdfsyVz4GniIOphgx/MKMAPDxhjLtdPaIv0QBN4+YBh4Su/0mwPkKaGkU/\noVLlmnOgASz8LM7o0stE9zkqffPnKvBJaqPGubkCgYEAsE2NaAr3soZezqeHbZmz\n50/J5Nlw9y9aYT1wXxfP5aYjfTM294eYVlVPxmg8jJ9m0CH1LWg9NBW0apb6ddoq\n17450oVzesAVodCd91HxMgfTHXT7junuNR9mDlQqxQQ1wtYGYh22eCOI8oNV28a7\nsRVaNfrX+6ZHma3fwcwzEMw=\n-----END PRIVATE KEY-----\n",
+  "client_email": "my-helm-deployer@careful-airfoil-470112-u0.iam.gserviceaccount.com",
+  "client_id": "112760197875661537373",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/my-helm-deployer%40careful-airfoil-470112-u0.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
