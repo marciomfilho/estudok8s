@@ -7,7 +7,7 @@ pipeline {
     GCP_CLUSTER = 'cluster-zabbix-grafana'
     NAMESPACE = 'monitoring'
     GCLOUD_BIN = '/Users/marcio/Downloads/google-cloud-sdk/bin/gcloud'
-    PROJECT_SOURCE = '/Users/marcio/Documents/repositorio/estudok8s'
+    PROJECT_SOURCE = '/Users/marcio/Documents/aula/estudok8s'
   }
   stages {
     stage('Preparar workspace') {
