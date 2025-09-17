@@ -5,7 +5,7 @@ pipeline {
     REGION     = 'us-central1'
     ZONE       = 'us-central1-a'
     CLUSTER    = 'cluster-zabbix-grafana'
-    TF_DIR     = 'terraform' // pasta onde ficam os arquivos Terraform
+    TF_DIR     = '/Users/marcio/Documents/repositorio/estudok8s/terraform' // pasta onde ficam os arquivos Terraform
     GCLOUD_BIN = '/Users/marcio/Downloads/google-cloud-sdk/bin/gcloud'
   }
   stages {
