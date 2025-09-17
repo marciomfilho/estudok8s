@@ -1,0 +1,94 @@
+pipeline {
+  agent any
+  environment {
+    PATH = "/opt/homebrew/bin:/usr/local/bin:/Users/marcio/Downloads/google-cloud-sdk/bin:${env.PATH}"
+    GCP_PROJECT = 'careful-airfoil-470112-u0'
+    GCP_ZONE = 'us-central1-a'
+    GCP_CLUSTER = 'cluster-zabbix-grafana'
+    NAMESPACE = 'monitoring'
+    GCLOUD_BIN = '/Users/marcio/Downloads/google-cloud-sdk/bin/gcloud'
+    PROJECT_SOURCE = '/Users/marcio/Documents/repositorio/estudok8s'
+  }
+  stages {
+    stage('Preparar workspace') {
+      steps {
+        sh 'rm -rf *'
+        sh "cp -R $PROJECT_SOURCE/* ."
+        sh 'ls -la'
+      }
+    }
+    stage('Verificar ambiente') {
+      steps {
+        sh 'echo $PATH'
+        sh 'which gcloud'
+        sh 'gcloud --version'
+        sh 'which kubectl'
+        sh 'kubectl version --client'
+        sh 'which terraform'
+        sh 'terraform version'
+      }
+    }
+    stage('Autenticar e Provisionar Infraestrutura') {
+      steps {
+        withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+          sh "ls -l $GOOGLE_APPLICATION_CREDENTIALS"
+          sh "$GCLOUD_BIN auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS"
+          dir('terraform') {
+            sh 'terraform init'
+            sh 'terraform apply -auto-approve'
+          }
+        }
+      }
+    }
+    stage('Configurar kubectl') {
+      steps {
+        withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+          sh "$GCLOUD_BIN auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS"
+          sh "$GCLOUD_BIN container clusters get-credentials $GCP_CLUSTER --zone $GCP_ZONE --project $GCP_PROJECT"
+        }
+      }
+    }
+    stage('Criar Namespace') {
+      steps {
+        sh '''
+          if ! kubectl get namespace $NAMESPACE >/dev/null 2>&1; then
+            kubectl create namespace $NAMESPACE
+          else
+            echo "Namespace $NAMESPACE já existe."
+          fi
+        '''
+      }
+    }
+    stage('Limpar releases Helm') {
+      steps {
+        sh '''
+          helm uninstall zabbix --namespace $NAMESPACE || echo "Release zabbix não existe, pulando uninstall."
+          helm uninstall grafana --namespace $NAMESPACE || echo "Release grafana não existe, pulando uninstall."
+        '''
+      }
+    }
+    stage('Deploy Zabbix via Helm') {
+      steps {
+        dir('helm/zabbix') {
+          sh 'helm repo add zabbix-community https://zabbix-community.github.io/helm-zabbix'
+          sh 'helm repo update'
+          sh 'helm upgrade --install zabbix zabbix-community/zabbix -f values.yaml --namespace $NAMESPACE --create-namespace --dependency-update'
+        }
+      }
+    }
+    stage('Deploy Grafana via Helm') {
+      steps {
+        dir('helm/grafana') {
+          sh 'helm repo add grafana https://grafana.github.io/helm-charts'
+          sh 'helm repo update'
+          sh 'helm upgrade --install grafana grafana/grafana -f values.yaml --namespace $NAMESPACE'
+        }
+      }
+    }
+    stage('Aplicar Ingress') {
+      steps {
+        sh 'kubectl apply -f k8s-manifests/ingress.yaml'
+      }
+    }
+  }
+}

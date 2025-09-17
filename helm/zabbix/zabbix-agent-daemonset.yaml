@@ -26,6 +26,11 @@ spec:
           mountPath: /var/log/zabbix
         - name: run-volume
           mountPath: /var/run/zabbix
+        securityContext:
+          runAsUser: 1997
+          runAsGroup: 1997
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
       volumes:
       - name: config-volume
         configMap:
@@ -34,5 +39,3 @@ spec:
         emptyDir: {}
       - name: run-volume
         emptyDir: {}
-      securityContext:
-        runAsUser: 0

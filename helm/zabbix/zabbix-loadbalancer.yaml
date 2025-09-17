@@ -6,10 +6,10 @@ metadata:
   labels:
     app: zabbix-web
 spec:
-  type: LoadBalancer  # Expondo serviço via IP público
+  type: LoadBalancer
   ports:
-    - port: 80        # Porta externa do LoadBalancer
-      targetPort: 80  # Porta do container Zabbix Web
+    - port: 80
+      targetPort: 80
       protocol: TCP
   selector:
     app: zabbix-web
@@ -32,33 +32,28 @@ spec:
         app: zabbix-web
     spec:
       containers:
-      - name: zabbix-web
-        image: zabbix/zabbix-web-nginx-pgsql:latest
-        ports:
-        - containerPort: 80
-        readinessProbe:
-          httpGet:
-            path: /api_jsonrpc.php
-            port: 80
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          failureThreshold: 3
-        livenessProbe:
-          httpGet:
-            path: /api_jsonrpc.php
-            port: 80
-          initialDelaySeconds: 30
-          periodSeconds: 20
-          failureThreshold: 3
-        resources:
-          requests:
-            cpu: "250m"
-            memory: "256Mi"
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
----
-# Recomendações adicionais (execute no GCP Console ou gcloud CLI):
-# 1. Configure regras de firewall para liberar acesso à porta 80 somente para IPs confiáveis.
-# 2. Implemente autenticação forte no Zabbix e altere credenciais padrão imediatamente.
-# 3. Monitore logs do Zabbix e do cluster para detectar acessos suspeitos.
+        - name: zabbix-web
+          image: zabbix/zabbix-web-nginx-pgsql:latest
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /api_jsonrpc.php
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api_jsonrpc.php
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

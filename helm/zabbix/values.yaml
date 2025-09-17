@@ -1,6 +1,6 @@
 server:
   image:
-    tag: "5.4.0"
+    tag: 5.4.0
   persistence:
     enabled: true
     size: 10Gi
@@ -19,17 +19,12 @@ frontend:
 database:
   type: postgresql
   postgresql:
+    existingSecret: zabbix-db-secret
     postgresqlDatabase: zabbix
     postgresqlUsername: zabbix
-    postgresqlPassword: zabbixpassword
-    resources:
-      requests:
-        cpu: 200m
-        memory: 512Mi
 
-web: 
-  env: 
-    DB_SERVER_HOST: "zabbix-postgresql.monitoring.svc.cluster.local"
-    POSTGRES_DB: "zabbix"
-    POSTGRES_USER: "zabbix"
-    POSTGRES_PASSWORD: "zabbixpassword"
+web:
+  env:
+    DBSERVERHOST: zabbix-postgresql.monitoring.svc.cluster.local
+    POSTGRESDB: zabbix
+    POSTGRESUSER: zabbix
