@@ -22,6 +22,7 @@ database:
     existingSecret: zabbix-db-secret
     postgresqlDatabase: zabbix
     postgresqlUsername: zabbix
+  host: zabbix-postgresql.monitoring.svc.cluster.local
 
 web:
   env:
