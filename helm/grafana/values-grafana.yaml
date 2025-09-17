@@ -1,0 +1,39 @@
+adminUser: admin
+adminPassword: strongpassword123    # Troque para uma senha segura
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClassName: standard       # Ajuste conforme seu cluster
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+service:
+  type: LoadBalancer
+  loadBalancerIP: ""               # Defina IP estático aqui se desejar
+
+ingress:
+  enabled: false
+
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        options:
+          path: /var/lib/grafana/dashboards/default
+
+dashboards:
+  default:
+    my-dashboard:
+      # Caminho para dashboard JSON etc, se desejar importar dashboards automaticamente
+      file: /path/to/my-dashboard.json
