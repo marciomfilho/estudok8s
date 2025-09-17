@@ -6,32 +6,15 @@ pipeline {
     CLUSTER_ZONE = 'us-central1-a'
     NAMESPACE    = 'monitoring'
     GCLOUD_BIN   = '/Users/marcio/Downloads/google-cloud-sdk/bin/gcloud'
-    PATH         = "/opt/homebrew/bin:/usr/local/bin:/Users/marcio/Downloads/google-cloud-sdk/bin:${env.PATH}"
     REPO_ROOT    = '/Users/marcio/Documents/repositorio/estudok8s'
   }
   stages {
-    stage('Preparar Workspace') {
-      steps {
-        sh 'rm -rf *'
-        sh "cp -R $REPO_ROOT/* ."
-        sh 'ls -la'
-      }
-    }
-    stage('Verificar Ambiente') {
-      steps {
-        sh 'echo $PATH'
-        sh 'which gcloud'
-        sh 'gcloud --version'
-        sh 'which kubectl'
-        sh 'kubectl version --client'
-        sh 'which helm'
-        sh 'helm version'
-      }
-    }
-    stage('Autenticação GCP') {
+    stage('Autenticar GCP') {
       steps {
         withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-          sh "$GCLOUD_BIN auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS"
+          sh '''
+            $GCLOUD_BIN auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+          '''
         }
       }
     }
@@ -42,10 +25,10 @@ pipeline {
     }
     stage('Criar Namespace e Policies') {
       steps {
-        sh '''
+        sh """
           kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
           kubectl apply -f $REPO_ROOT/network-policy.yaml -n $NAMESPACE
-        '''
+        """
       }
     }
     stage('Deploy Zabbix Agent Config e DaemonSet') {
@@ -73,4 +56,3 @@ pipeline {
     }
   }
 }
-

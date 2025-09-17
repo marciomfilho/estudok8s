@@ -1,0 +1,38 @@
+pipeline {
+  agent any
+  environment {
+    PROJECT_ID = 'careful-airfoil-470112-u0'
+    REGION     = 'us-central1'
+    ZONE       = 'us-central1-a'
+    CLUSTER    = 'cluster-zabbix-grafana'
+    TF_DIR     = 'terraform' // pasta onde ficam os arquivos Terraform
+    GCLOUD_BIN = '/Users/marcio/Downloads/google-cloud-sdk/bin/gcloud'
+  }
+  stages {
+    stage('Autenticar GCP') {
+      steps {
+        withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+          sh '''
+            $GCLOUD_BIN auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+          '''
+        }
+      }
+    }
+    stage('Provisionar Cluster GKE via Terraform') {
+      steps {
+        dir(TF_DIR) {
+          sh 'terraform init'
+          sh 'terraform apply -auto-approve'
+        }
+      }
+    }
+    stage('Confirmar Cluster') {
+      steps {
+        sh """
+          $GCLOUD_BIN container clusters get-credentials $CLUSTER --zone $ZONE --project $PROJECT_ID
+          kubectl get nodes
+        """
+      }
+    }
+  }
+}
