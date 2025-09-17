@@ -5,33 +5,40 @@ pipeline {
     REGION     = 'us-central1'
     ZONE       = 'us-central1-a'
     CLUSTER    = 'cluster-zabbix-grafana'
-    TF_DIR     = '/Users/marcio/Documents/repositorio/estudok8s/terraform' // pasta onde ficam os arquivos Terraform
+    TF_DIR     = '/Users/marcio/Documents/repositorio/estudok8s/terraform'
     GCLOUD_BIN = '/Users/marcio/Downloads/google-cloud-sdk/bin/gcloud'
+    TERRAFORM_BIN = '/opt/homebrew/bin/terraform'
+    PATH       = "/opt/homebrew/bin:/usr/local/bin:/Users/marcio/Downloads/google-cloud-sdk/bin:${env.PATH}"
   }
   stages {
-    stage('Autenticar GCP') {
+    stage('Verificar PATH e Ferramentas') {
+      steps {
+        sh '''
+          echo "PATH=$PATH"
+          $TERRAFORM_BIN version
+          kubectl version --client
+          $GCLOUD_BIN version
+        '''
+      }
+    }
+    stage('Autenticar GCP e Provisionar Terraform') {
       steps {
         withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
           sh '''
             $GCLOUD_BIN auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+            cd $TF_DIR
+            $TERRAFORM_BIN init
+            $TERRAFORM_BIN apply -auto-approve -var="GCP_CREDENTIALS_FILE=$GOOGLE_APPLICATION_CREDENTIALS"
           '''
-        }
-      }
-    }
-    stage('Provisionar Cluster GKE via Terraform') {
-      steps {
-        dir(TF_DIR) {
-          sh 'terraform init'
-          sh 'terraform apply -auto-approve'
         }
       }
     }
     stage('Confirmar Cluster') {
       steps {
-        sh """
+        sh '''
           $GCLOUD_BIN container clusters get-credentials $CLUSTER --zone $ZONE --project $PROJECT_ID
           kubectl get nodes
-        """
+        '''
       }
     }
   }

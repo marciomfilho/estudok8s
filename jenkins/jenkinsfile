@@ -6,7 +6,9 @@ pipeline {
     CLUSTER_ZONE = 'us-central1-a'
     NAMESPACE    = 'monitoring'
     GCLOUD_BIN   = '/Users/marcio/Downloads/google-cloud-sdk/bin/gcloud'
-    REPO_ROOT    = '/Users/marcio/Documents/repositorio/estudok8s'
+    REPO_ROOT    = '/Users/marcio/Documents/repositorio/estudok8s/helm/zabbix'
+    TERRAFORM_BIN = '/opt/homebrew/bin/terraform'
+    PATH         = "/opt/homebrew/bin:/usr/local/bin:/Users/marcio/Downloads/google-cloud-sdk/bin:${env.PATH}"
   }
   stages {
     stage('Autenticar GCP') {
