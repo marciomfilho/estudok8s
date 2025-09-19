@@ -1,6 +1,5 @@
 pipeline {
   agent any
-
   environment {
     PROJECT_ID   = 'careful-airfoil-470112-u0'
     CLUSTER_NAME = 'cluster-zabbix-grafana'
@@ -10,10 +9,7 @@ pipeline {
     REPO_ROOT    = '/Users/marcio/Documents/repositorio/estudok8s/helm/zabbix'
     TERRAFORM_BIN = '/opt/homebrew/bin/terraform'
     PATH         = "/opt/homebrew/bin:/usr/local/bin:/Users/marcio/Downloads/google-cloud-sdk/bin:${env.PATH}"
-    // Jenkins Credentials ID para JSON Google Service Account
-    GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-service-account-key')
   }
-
   stages {
     stage('Autenticar GCP') {
       steps {
@@ -24,13 +20,11 @@ pipeline {
         }
       }
     }
-
     stage('Configurar kubectl') {
       steps {
         sh "$GCLOUD_BIN container clusters get-credentials $CLUSTER_NAME --zone $CLUSTER_ZONE --project $PROJECT_ID"
       }
     }
-
     stage('Criar Namespace e Policies') {
       steps {
         sh """
@@ -39,7 +33,6 @@ pipeline {
         """
       }
     }
-
     stage('Deploy Zabbix Agent Config e DaemonSet') {
       steps {
         sh """
@@ -49,7 +42,6 @@ pipeline {
         """
       }
     }
-
     stage('Deploy Zabbix via Helm') {
       steps {
         sh """
@@ -59,59 +51,9 @@ pipeline {
         """
       }
     }
-
     stage('Expose Zabbix Web') {
       steps {
         sh "kubectl apply -f $REPO_ROOT/zabbix-loadbalancer.yaml -n $NAMESPACE"
-      }
-    }
-
-    // --- Novo estágio Ansible para registro DNS GCP ---
-    stage('Ansible DNS Record') {
-      environment {
-        DNS_RECORD = ''
-        DNS_IP = ''
-        DNS_ZONE_NAME = ''  // Ajustar conforme o output Terraform ou variável disponível
-        GCP_PROJECT_ID = "${env.PROJECT_ID}"
-      }
-      steps {
-        // Instalação dependências Ansible e Google Cloud Collection
-        sh 'pip install --upgrade pip'
-        sh 'pip install ansible boto boto3 google-auth requests'
-        sh 'ansible-galaxy collection install google.cloud'
-
-        // Playbook Ansible inline
-        writeFile file: 'ansible-dns.yml', text: '''
-- hosts: localhost
-  connection: local
-  collections:
-    - google.cloud
-  tasks:
-    - name: Adicionar/atualizar registro A no Cloud DNS
-      google.cloud.gcp_dns_resource_record_set:
-        name: "{{ dns_record }}.{{ dns_zone_name }}."
-        type: A
-        ttl: 300
-        managed_zone: "{{ dns_zone_name }}"
-        project: "{{ gcp_project_id }}"
-        state: present
-        rrdatas:
-          - "{{ dns_ip }}"
-      vars:
-        auth_kind: serviceaccount
-'''
-
-        // Execução playbook
-        withCredentials([file(credentialsId: 'gcp-service-account-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-          sh '''
-            export GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS
-            ansible-playbook ansible-dns.yml \
-              -e "dns_record=$DNS_RECORD" \
-              -e "dns_ip=$DNS_IP" \
-              -e "dns_zone_name=$DNS_ZONE_NAME" \
-              -e "gcp_project_id=$GCP_PROJECT_ID"
-          '''
-        }
       }
     }
   }
